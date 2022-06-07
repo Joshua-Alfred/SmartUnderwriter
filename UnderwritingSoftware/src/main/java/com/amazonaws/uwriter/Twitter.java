@@ -13,8 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
 import javax.imageio.ImageIO;
 
 import twitter4j.MediaEntity;
@@ -26,7 +24,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class Twitter {
 
-	public static void main(String args[]) throws TwitterException, IOException, SQLException, ClassNotFoundException {
+	public void extract(String user) throws TwitterException, IOException, SQLException, ClassNotFoundException {
 
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.setDebugEnabled(true).setOAuthConsumerKey("7HVJ84Cqpc4gWvMjSimUUQXxp")
@@ -45,12 +43,7 @@ public class Twitter {
 		String mysqlUrl = "jdbc:mysql://localhost/underwriter";
 		Connection con = DriverManager.getConnection(mysqlUrl, "root", "Cathjp@273");
 
-		// getting a user's timeline of tweets
-		Scanner in = new Scanner(System.in);
-		System.out.println("enter user name");
-		String user = in.nextLine();
-		in.close();
-
+		
 		while (page <= 3) {
 			Paging paging = new Paging(page, 20);
 			List<Status> userStatus = twitter.getUserTimeline(user, paging);
@@ -91,7 +84,7 @@ public class Twitter {
 				String fileType = fileName.substring(fileName.lastIndexOf(".")).substring(1);
 				
 				File file = new File(
-						System.getProperty("user.dir") + "\\pictures" + fileName.substring(fileName.lastIndexOf("/")));
+						"C:\\Users\\HP\\git\\SmartUnderwriter\\UnderwritingSoftware\\pictures" + fileName.substring(fileName.lastIndexOf("/")));
 				ImageIO.write(resizedImg, fileType, file);
 
 				String filePath = file.getAbsolutePath();

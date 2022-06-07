@@ -12,7 +12,7 @@
 <title>Extraction</title>
 </head>
 <body>
-<h1>Extracting Information..</h1>
+<h1>Validation partially complete.</h1>
 
 
 

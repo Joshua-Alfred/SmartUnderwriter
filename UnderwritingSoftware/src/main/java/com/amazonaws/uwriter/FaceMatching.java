@@ -1,6 +1,5 @@
 package com.amazonaws.uwriter;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -26,7 +25,7 @@ import com.amazonaws.util.IOUtils;
 
 public class FaceMatching {
 
-	public static void main(String[] args) throws Exception {
+	public void imageValidate() throws Exception {
 		Float similarityThreshold = 70F;
 		String sourceImage = "C:/Users/HP/Desktop/tomm.jpg";
 
@@ -40,8 +39,6 @@ public class FaceMatching {
 
 		AmazonRekognition rekognitionClient = AmazonRekognitionClientBuilder.standard().withRegion(clientRegion)
 				.build();
-		
-		
 
 		// Load source and target images and create input parameters
 
@@ -52,9 +49,10 @@ public class FaceMatching {
 		ResultSet rs = stmt.executeQuery("select * from images");
 		while (rs.next()) {
 			int id = rs.getRow();
-			
+			int compare;
+			boolean isGliding = false, isSmoking = false, isDrinking = false;
 			String name = rs.getString(3);
-			System.out.println(id + " -> "+ name);
+			System.out.println(id + " -> " + name);
 			Blob blob = rs.getBlob("image");
 			byte byteArray[] = blob.getBytes(1, (int) blob.length());
 			targetImageBytes = ByteBuffer.wrap(byteArray);
@@ -62,86 +60,69 @@ public class FaceMatching {
 			Image target = new Image().withBytes(targetImageBytes);
 
 			CompareFacesRequest request = new CompareFacesRequest().withSourceImage(source).withTargetImage(target)
-					.withSimilarityThreshold(similarityThreshold);
+				.withSimilarityThreshold(similarityThreshold);
 
 			try {
-			// Call operation
-			CompareFacesResult compareFacesResult = rekognitionClient.compareFaces(request);
+				// Call operation
+				CompareFacesResult compareFacesResult = rekognitionClient.compareFaces(request);
 
+				// Display results
+				List<CompareFacesMatch> faceDetails = compareFacesResult.getFaceMatches();
+				if (faceDetails.isEmpty()) {
+					continue;
+				} else {
+					System.out.println("face detected, proceeding to label detection");
 
-                // Display results
-                List <CompareFacesMatch> faceDetails = compareFacesResult.getFaceMatches();
-                if (faceDetails.isEmpty()) {
-                	continue;
-                }
-                System.out.println("face detected, proceeding to label detection");
-                
-                DetectLabelsRequest labelrequest = new DetectLabelsRequest()
-                        .withImage(new Image()
-                                .withBytes(targetImageBytes))
-                        .withMaxLabels(10)
-                        .withMinConfidence(77F);
-                DetectLabelsResult result = rekognitionClient.detectLabels(labelrequest);
-                List <Label> labels = result.getLabels();
+					DetectLabelsRequest labelrequest = new DetectLabelsRequest()
+							.withImage(new Image().withBytes(targetImageBytes)).withMaxLabels(10)
+							.withMinConfidence(77F);
+					DetectLabelsResult result = rekognitionClient.detectLabels(labelrequest);
+					List<Label> labels = result.getLabels();
 
-                
-                for (Label label: labels) {
-                   System.out.println(label.getName() + ": " + label.getConfidence().toString());
-                }
-                
-                
+					for (Label label : labels) {
+						// System.out.println(label.getName() + ": " +
+						// label.getConfidence().toString());
+
+						compare = Float.compare(label.getConfidence(), 50f);
+
+						if (compare > 0) {
+
+							if (label.getName().equalsIgnoreCase("gliding")
+									|| label.getName().equalsIgnoreCase("parachute")) { 
+								isGliding = true;
+
+							} else if (label.getName().equalsIgnoreCase("smoking")) { 
+
+								isSmoking = true;
+							}
+
+							else if (label.getName().equalsIgnoreCase("bar counter")
+									|| label.getName().equalsIgnoreCase("alcohol")
+									|| label.getName().equalsIgnoreCase("beer")
+									|| label.getName().equalsIgnoreCase("liquor")) {
+								isDrinking = true;
+							}
+						}
+					}
+				}
+				
+				System.out.println("is user involved in paragliding: " + isGliding);
+				System.out.println("is user involved in Smoking: " + isSmoking);
+				System.out.println("is user involved in Drinking: " + isDrinking);
+				
+			}catch(com.amazonaws.services.rekognition.model.InvalidParameterException ex) {
+				System.out.println("no face present in image.");
+				
+			}catch (Exception e) {
+			
+				e.printStackTrace();
+			} finally {
+				System.out.println("---------------------------------------------");
+
 			}
-			catch(Exception e) {
-				 e.printStackTrace();
-			}
-			finally {
-				System.out.println("--------------------------------------");
-			}
 
-//		File dir = new File("C:\\Users\\HP\\git\\RekognitionTest\\RekognitionTest\\pictures");
-//		for (File file : dir.listFiles()) {
-//			String filePath = file.getAbsolutePath();
-//			InputStream inputStream2 = new FileInputStream(new File(filePath));
-//			targetImageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream2));
-//			Image target = new Image().withBytes(targetImageBytes);
-//			
-//			try {
-//				
-//				CompareFacesRequest request = new CompareFacesRequest().withSourceImage(source).withTargetImage(target)
-//						.withSimilarityThreshold(similarityThreshold);
-//						
-//						
-//				// Call operation
-//				CompareFacesResult compareFacesResult = rekognitionClient.compareFaces(request);
-//	
-//	
-//	                // Display results
-//	                List <CompareFacesMatch> faceDetails = compareFacesResult.getFaceMatches();
-//	                for (CompareFacesMatch match: faceDetails){
-//	                  ComparedFace face= match.getFace();
-//	                  BoundingBox position = face.getBoundingBox();
-//	                  System.out.println("Face at " + position.getLeft().toString()
-//	                        + " " + position.getTop()
-//	                        + " matches with " + match.getSimilarity().toString()
-//	                        + "% confidence.");
-//	
-//	                }
-//	                List<ComparedFace> uncompared = compareFacesResult.getUnmatchedFaces();
-//	
-//	                System.out.println("There was " + uncompared.size()
-//	                     + " face(s) that did not match");
-//				}
-//				catch(Exception e) {
-//					e.printStackTrace();
-//				}
-//			finally {
-//				System.out.println("------------------------------------------------");
-//			}
-//			
 		}
 
-	}
+}
 
-	
-	
 }
