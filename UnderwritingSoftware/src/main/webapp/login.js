@@ -11,4 +11,11 @@ function validate(){
 	else{
 		alert("wrong credentials, try again!");
 	}
+	
+}
+
+function textchange()
+{
+    if (this.value=="Upload and Vaidate") this.value = "Validating...";
+    else this.value = "Upload and Validate";
 }

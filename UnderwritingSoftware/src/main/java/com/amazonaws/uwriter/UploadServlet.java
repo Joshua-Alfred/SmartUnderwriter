@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-import javax.servlet.RequestDispatcher;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -58,6 +58,8 @@ public class UploadServlet extends HttpServlet {
 		}
 
 		byte[] fileBytes = buffer.toByteArray();
+		
+		buffer.close();
 
 		try {
 			DocumentProcessorServiceClient client = DocumentProcessorServiceClient.create();
@@ -99,9 +101,11 @@ public class UploadServlet extends HttpServlet {
 		out.println("extracting user's images from twitter");
 		Twitter obj = new Twitter(); // parallel from fb api and wearable api
 		FaceMatching obj2 = new FaceMatching();
+		//InstaConnect obj3 = new InstaConnect();
 		try {
-			obj.extract("tomcruise"); //assume extracted from document
-			out.println("extracted and uploaded to db");
+			obj.extract("tomcruise");
+			//obj3.InstaExtract("tomcruise");//assume extracted from document
+			out.println("extracted and uploaded to db"); 
 			obj2.imageValidate();
 		} catch (Exception e) {
 
@@ -110,6 +114,10 @@ public class UploadServlet extends HttpServlet {
 			out.println("validation partially complete");
 		}
 
+		
+		response.sendRedirect(request.getContextPath() + "/ImageDisp.jsp");
+		
+		
 		
 
 	}

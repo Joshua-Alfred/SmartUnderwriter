@@ -43,6 +43,7 @@
 			<version>3.3.2</version>
 		</dependency>
 
+
 		<!-- https://mvnrepository.com/artifact/com.facebook.business.sdk/facebook-java-business-sdk -->
 		<dependency>
 			<groupId>com.facebook.business.sdk</groupId>
@@ -56,6 +57,13 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.15</version>
 		</dependency>
 
 
