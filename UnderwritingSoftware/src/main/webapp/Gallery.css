@@ -1,4 +1,13 @@
 @charset "ISO-8859-1";
+
+body{
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+	background-color:navy;
+	
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;

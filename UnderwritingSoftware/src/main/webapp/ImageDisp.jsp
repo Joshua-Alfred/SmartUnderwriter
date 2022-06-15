@@ -13,7 +13,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="loginstyle.css">
+<link rel="stylesheet" href="Gallery.css" type="text/css">
 <script src="grid.js"></script>
 <meta charset="ISO-8859-1">
 <title>Displaying</title>
@@ -32,6 +32,9 @@ try {
     PreparedStatement ps = con.prepareStatement("select * from images");
     ResultSet rs = ps.executeQuery();
     int i=1;
+   
+    
+    ServletOutputStream os = response.getOutputStream();
     
     while(rs.next()) {
         Blob blob = rs.getBlob("image");
@@ -39,22 +42,26 @@ try {
         byte byteArray[] = blob.getBytes(1, (int) blob.length());
         
         String encodedImg = Base64.encodeBase64String(byteArray);
-        System.out.println(encodedImg);
-        response.setContentType("image/png");
         
-//        OutputStream os = response.getOutputStream();
-//        os.write(byteArray);
-//        os.flush();
-//        os.close();
+        response.setContentType("image/jpeg");
         
-        out.print("<img alt= \""+name+"\" src=\"data:image/png;base64,"+encodedImg+"\"></img>");
+        
+        os.write(byteArray);
+        os.flush();
+        
+        
+        
   
     }
+    os.close();
+   
 } catch (Exception e) {
     out.println(e);
 }
 
 %>
+
+
   </div>
 </div>
 

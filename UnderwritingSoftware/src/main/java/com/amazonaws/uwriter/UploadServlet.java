@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +23,33 @@ import com.google.cloud.documentai.v1.ProcessResponse;
 import com.google.cloud.documentai.v1.RawDocument;
 import com.google.protobuf.ByteString;
 
+class StatusPage extends HttpServlet implements Runnable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	HttpServletRequest request;
+	HttpServletResponse response;
+
+	public StatusPage(HttpServletRequest request, HttpServletResponse response) {
+		this.response = response;
+		this.request = request;
+	}
+
+	public void run() {
+		try {
+			RequestDispatcher dd = request.getRequestDispatcher("AutoRefresh.jsp");
+			dd.forward(request, response);
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		} catch (ServletException e) {
+
+			e.printStackTrace();
+		}
+	}
+}
+
 @WebServlet("/Uploader")
 @MultipartConfig
 public class UploadServlet extends HttpServlet {
@@ -35,6 +62,9 @@ public class UploadServlet extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		PrintWriter out = response.getWriter();
+
+		Thread object = new Thread(new StatusPage(request, response));
+		object.start();
 
 		// google cloud form parser credentials
 		String projectId = "597732289824";
@@ -58,8 +88,10 @@ public class UploadServlet extends HttpServlet {
 		}
 
 		byte[] fileBytes = buffer.toByteArray();
-		
+
 		buffer.close();
+
+		response.sendRedirect(request.getContextPath() + "/AutoRefresh.jsp");
 
 		try {
 			DocumentProcessorServiceClient client = DocumentProcessorServiceClient.create();
@@ -101,11 +133,11 @@ public class UploadServlet extends HttpServlet {
 		out.println("extracting user's images from twitter");
 		Twitter obj = new Twitter(); // parallel from fb api and wearable api
 		FaceMatching obj2 = new FaceMatching();
-		//InstaConnect obj3 = new InstaConnect();
+		// InstaConnect obj3 = new InstaConnect();
 		try {
 			obj.extract("tomcruise");
-			//obj3.InstaExtract("tomcruise");//assume extracted from document
-			out.println("extracted and uploaded to db"); 
+			// obj3.InstaExtract("tomcruise");//assume extracted from document
+			out.println("extracted and uploaded to db");
 			obj2.imageValidate();
 		} catch (Exception e) {
 
@@ -114,11 +146,7 @@ public class UploadServlet extends HttpServlet {
 			out.println("validation partially complete");
 		}
 
-		
-		response.sendRedirect(request.getContextPath() + "/ImageDisp.jsp");
-		
-		
-		
+//		response.sendRedirect(request.getContextPath() + "/ImageDisp.jsp");
 
 	}
 
