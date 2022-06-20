@@ -21,15 +21,12 @@ public class FitnessDataCollector {
 
 	public static void main(String[] args) throws IOException {
 		
-		String accessToken = "Bearer ya29.a0ARrdaM9XoyTYR9gZSKv46mhpbdlzH0F3Inuf57Ezcy737BHumtT4u7MLWtIu_hbbnQrY3zvBdzyHQgARbmF01fCfD0GPldQzamAz6xY3J1ZtUv4PEUUXwRHQ66ua9fqDmDN92umi2ZDptHapQGbb0LgngqCI";
+		String accessToken = "Bearer ya29.a0ARrdaM-6uOlc-PRWq7BRkXjwPmK_zJT8hsFbWnkKK5FNWITRb9LbICdciSSaVKdQxPvPNjw3LrsjeHFSouwoFRUiaUpQ8WN_os0LVawC6h2gC4HWMzCeK80mdM0xAS2TUYyJaQRErkepE3QNTsoiebu2g9hu";
 		
 		String userHeartPoints = "derived:com.google.heart_minutes:com.google.android.gms:merge_heart_minutes";
 		String userEnergySpent = "derived:com.google.calories.expended:com.google.android.gms:platform_calories_expended";
 		String userStepCount = "derived:com.google.step_count.delta:com.google.android.gms:estimated_steps";
-		String userHeight = "https://www.googleapis.com/fitness/v1/users/me/dataSources/raw:com.google.height:com.google.android.apps.fitness:user_input/datasets";
-		String userWeight = "raw:com.google.weight:com.google.android.apps.fitness:user_input";
 		String userDistance = "derived:com.google.distance.delta:com.google.android.gms:merge_distance_delta";
-		String userActivities = "derived:com.google.activity.segment:com.google.android.gms:merge_activity_segments";
 		
 		List<Integer> steps = new ArrayList<>();
 		List<Double> EnergyCal = new ArrayList<>();
@@ -55,6 +52,7 @@ public class FitnessDataCollector {
 		String jsonData = response.body().string();
 		//System.out.println(jsonData);
 		
+		
 		try {
 			JSONObject Jobject = new JSONObject(jsonData);
 			JSONArray bucket = Jobject.getJSONArray("bucket");
@@ -62,10 +60,17 @@ public class FitnessDataCollector {
 			bucketItems = bucket.length();
 			
 			for(int i=0;i<bucket.length();i++) {
-				JSONObject jsonObject = (JSONObject) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
-						.getJSONArray("point").getJSONObject(0).getJSONArray("value").getJSONObject(0);
+				JSONArray jsonPoints = (JSONArray) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
+						.getJSONArray("point");
+				
+				if(jsonPoints!=null && jsonPoints.length()>0) {
+					
+				
+				JSONObject jsonObject = jsonPoints.getJSONObject(0).getJSONArray("value").getJSONObject(0);
 				//System.out.println(jsonObject.getInt("intVal"));
 				steps.add(jsonObject.getInt("intVal"));
+				
+				}
 			}
 			
 		
@@ -95,10 +100,16 @@ public class FitnessDataCollector {
 			JSONArray bucket = Jobject.getJSONArray("bucket");
 			
 			for(int i=0;i<bucket.length();i++) {
-				JSONObject jsonObject = (JSONObject) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
-						.getJSONArray("point").getJSONObject(0).getJSONArray("value").getJSONObject(0);
-				//System.out.println(jsonObject.getDouble("fpVal"));
+				JSONArray jsonPoints = (JSONArray) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
+						.getJSONArray("point");
+				
+				if(jsonPoints!=null && jsonPoints.length()>0) {
+					
+				
+				JSONObject jsonObject = jsonPoints.getJSONObject(0).getJSONArray("value").getJSONObject(0);
+				
 				EnergyCal.add(jsonObject.getDouble("fpVal"));
+			}
 			}
 			
 			
@@ -127,10 +138,17 @@ public class FitnessDataCollector {
 			JSONArray bucket = Jobject.getJSONArray("bucket");
 			
 			for(int i=0;i<bucket.length();i++) {
-				JSONObject jsonObject = (JSONObject) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
-						.getJSONArray("point").getJSONObject(0).getJSONArray("value").getJSONObject(0);
-				//System.out.println(jsonObject.getDouble("fpVal"));
+				JSONArray jsonPoints = (JSONArray) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
+						.getJSONArray("point");
+				
+				if(jsonPoints!=null && jsonPoints.length()>0) {
+					
+				
+				JSONObject jsonObject = jsonPoints.getJSONObject(0).getJSONArray("value").getJSONObject(0);
+				
 				Distance.add(jsonObject.getDouble("fpVal"));
+				
+				}
 			}
 			
 			
@@ -154,15 +172,23 @@ public class FitnessDataCollector {
 				String jsonData4 = response4.body().string();
 				//System.out.println(jsonData4);
 				
+				
 				try {
 					JSONObject Jobject = new JSONObject(jsonData4);
 					JSONArray bucket = Jobject.getJSONArray("bucket");
 					
 					for(int i=0;i<bucket.length();i++) {
-						JSONObject jsonObject = (JSONObject) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
-								.getJSONArray("point").getJSONObject(0).getJSONArray("value").getJSONObject(1);
+						JSONArray jsonPoints = (JSONArray) bucket.getJSONObject(i).getJSONArray("dataset").getJSONObject(0)
+								.getJSONArray("point");
+						
+						if(jsonPoints!=null && jsonPoints.length()>0) {
+							
+						
+						JSONObject jsonObject = jsonPoints.getJSONObject(0).getJSONArray("value").getJSONObject(1);
 						//System.out.println(jsonObject.getInt("intVal"));
 						HeartPoints.add(jsonObject.getInt("intVal"));
+						
+						}
 					}
 					
 					
@@ -220,7 +246,7 @@ public class FitnessDataCollector {
 				+ "    }\r\n"
 				+ "  ],\r\n"
 				+ "  \"endTimeMillis\": "+millisNow+",\r\n"
-				+ "  \"startTimeMillis\": 1654518053000,\r\n"
+				+ "  \"startTimeMillis\": 1648751400000,\r\n"  //April 1st 12:00AM
 				+ "  \"bucketByTime\": {\r\n"
 				+ "    \"durationMillis\": 86400000\r\n"
 				+ "  }\r\n"
