@@ -26,6 +26,8 @@ import com.amazonaws.util.IOUtils;
 public class FaceMatching {
 
 	public void imageValidate() throws Exception {
+		int imageScore = 0;
+		
 		Float similarityThreshold = 70F;
 		String sourceImage = "C:/Users/HP/Desktop/tomm.jpg";
 
@@ -80,29 +82,32 @@ public class FaceMatching {
 					List<Label> labels = result.getLabels();
 
 					for (Label label : labels) {
-						// System.out.println(label.getName() + ": " +
-						// label.getConfidence().toString());
+						 System.out.println(label.getName() + ": " +
+						 label.getConfidence().toString());
 
-						compare = Float.compare(label.getConfidence(), 50f);
-
-						if (compare > 0) {
-
-							if (label.getName().equalsIgnoreCase("gliding")
-									|| label.getName().equalsIgnoreCase("parachute")) { 
-								isGliding = true;
-
-							} else if (label.getName().equalsIgnoreCase("smoking")) { 
-
-								isSmoking = true;
-							}
-
-							else if (label.getName().equalsIgnoreCase("bar counter")
-									|| label.getName().equalsIgnoreCase("alcohol")
-									|| label.getName().equalsIgnoreCase("beer")
-									|| label.getName().equalsIgnoreCase("liquor")) {
-								isDrinking = true;
-							}
-						}
+//						compare = Float.compare(label.getConfidence(), 50f);
+//
+//						if (compare > 0) {
+//
+//							if (label.getName().equalsIgnoreCase("gliding")
+//									|| label.getName().equalsIgnoreCase("parachute")) { 
+//								
+//								imageScore += 10;
+//
+//							} 
+//							
+//							else if (label.getName().equalsIgnoreCase("smoking")) { 
+//
+//								isSmoking = true;
+//							}
+//
+//							else if (label.getName().equalsIgnoreCase("bar counter")
+//									|| label.getName().equalsIgnoreCase("alcohol")
+//									|| label.getName().equalsIgnoreCase("beer")
+//									|| label.getName().equalsIgnoreCase("liquor")) {
+//								isDrinking = true;
+//							}
+//						}
 					}
 				}
 				

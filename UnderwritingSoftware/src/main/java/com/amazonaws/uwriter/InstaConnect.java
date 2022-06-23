@@ -47,7 +47,7 @@ public class InstaConnect {
 			}
 
 			Request request = new Request.Builder().url(url).get()
-					.addHeader("X-RapidAPI-Key", "b84b167723msha645c040071c79bp15ae31jsnab8aca85b141")
+					.addHeader("X-RapidAPI-Key", "43b7dca013mshdd80f828e71b4a9p179fa7jsn5ddd8d9f3d72")
 					.addHeader("X-RapidAPI-Host", "instagram-scraper-2022.p.rapidapi.com").build();
 
 			Response response = client.newCall(request).execute();
@@ -116,6 +116,14 @@ public class InstaConnect {
 			}
 
 			count++;
+			
+			if (has_next_page)
+				endCursor = nextpage.getString("end_cursor");
+			else
+				break;
+
+			System.out.println(endCursor);
+			
 			
 		} // end of while loop
 

@@ -6,13 +6,13 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
@@ -23,32 +23,7 @@ import com.google.cloud.documentai.v1.ProcessResponse;
 import com.google.cloud.documentai.v1.RawDocument;
 import com.google.protobuf.ByteString;
 
-class StatusPage extends HttpServlet implements Runnable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	HttpServletRequest request;
-	HttpServletResponse response;
 
-	public StatusPage(HttpServletRequest request, HttpServletResponse response) {
-		this.response = response;
-		this.request = request;
-	}
-
-	public void run() {
-		try {
-			RequestDispatcher dd = request.getRequestDispatcher("AutoRefresh.jsp");
-			dd.forward(request, response);
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		} catch (ServletException e) {
-
-			e.printStackTrace();
-		}
-	}
-}
 
 @WebServlet("/Uploader")
 @MultipartConfig
@@ -58,13 +33,21 @@ public class UploadServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	protected void service(HttpServletRequest request, HttpServletResponse   response) throws ServletException, IOException {
+        doPost(request, response);
+}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		int Rating = 0;
+		
+		HttpSession session = request.getSession(false);
+		//save message in session
+		
+		
 		PrintWriter out = response.getWriter();
 
-		Thread object = new Thread(new StatusPage(request, response));
-		object.start();
+		
 
 		// google cloud form parser credentials
 		String projectId = "597732289824";
@@ -91,7 +74,7 @@ public class UploadServlet extends HttpServlet {
 
 		buffer.close();
 
-		response.sendRedirect(request.getContextPath() + "/AutoRefresh.jsp");
+		
 
 		try {
 			DocumentProcessorServiceClient client = DocumentProcessorServiceClient.create();
@@ -131,22 +114,33 @@ public class UploadServlet extends HttpServlet {
 		}
 
 		out.println("extracting user's images from twitter");
+		
 		Twitter obj = new Twitter(); // parallel from fb api and wearable api
 		FaceMatching obj2 = new FaceMatching();
-		// InstaConnect obj3 = new InstaConnect();
+		InstaConnect obj3 = new InstaConnect();
 		try {
+			int fitScore = 0;
 			obj.extract("tomcruise");
-			// obj3.InstaExtract("tomcruise");//assume extracted from document
+			obj3.InstaExtract("tomcruise_test4");//assume extracted from document
 			out.println("extracted and uploaded to db");
 			obj2.imageValidate();
+			fitScore = FitnessDataCollector.fitcheck("ya29.a0ARrdaM8vzRDI1eHb55ItdSvbe-_qzSLxDxHrLjr0kdhRH95TuiLRpd-NiZm0nSjIRpjgQN4UskLOp6EQUfKcEZvANvtAXMnMZCQMhf0JJNOER2_40av-TE_QewmqPVzRomfs-ZtP-UC_jMdGvEg9HHDo70Sg");
+			
+			
+			session.setAttribute("fitScore", String.valueOf(fitScore));
+			
+			System.out.println(fitScore);
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		} finally {
 			out.println("validation partially complete");
 		}
+		
+		session.setAttribute("Rating", String.valueOf(Rating));
+		
+		response.sendRedirect(request.getContextPath() + "/AutoRefresh.jsp");
 
-//		response.sendRedirect(request.getContextPath() + "/ImageDisp.jsp");
 
 	}
 
