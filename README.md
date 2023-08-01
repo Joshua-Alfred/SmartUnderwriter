@@ -25,6 +25,5 @@ media data type of “social graph” is the best choice. This is because “soc
 *	Wearable data provides the detailed report of relationship between lifestyle behaviors (e.g. physical activity, nutrition, sleep) and health.
 *	Researchers found that the steps per day stratifies mortality risk even after controlling for age, gender, smoking status, and various health indicators was consistent across methods. And also, the steps per day provides additional segmentation of mortality even after considering traditional underwriting attributes, such as smoking status, BMI, cholesterol, blood pressure and health history of diabetes, cardiovascular disease and cancer.
 
-Please refer to the "master" branch for source code.
-
+_**Please refer to the "master" branch for source code.**_
 
